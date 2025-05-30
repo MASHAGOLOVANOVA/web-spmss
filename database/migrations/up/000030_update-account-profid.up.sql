@@ -1,0 +1,4 @@
+ALTER TABLE professor_account
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (login),
+ADD CONSTRAINT user_account_ibfk_1 FOREIGN KEY (professor_id) REFERENCES professor (id) ON DELETE CASCADE ON UPDATE CASCADE;

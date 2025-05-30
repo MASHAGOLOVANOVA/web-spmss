@@ -1,0 +1,2 @@
+REACT_APP_SERVER_ADDR=http://localhost:8080
+REACT_APP_ADDR=http://localhost:3000

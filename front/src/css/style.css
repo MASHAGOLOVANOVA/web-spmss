@@ -1,0 +1,174 @@
+.style-img-card {
+  height:20ch;
+  object-fit:cover;
+}
+.style-outline {
+  border-color: darkcyan;
+}
+.style-bg {
+  background-color: darkcyan !important;
+}
+
+.style-accordion>.accordion-button {
+  border-color: darkcyan;
+  background-color: transparent;
+  color: white !important;
+  height:4ch!important;
+}
+
+.style-accordion>.accordion-button:not(.collapsed) {
+  background-color: darkslategrey;
+}
+
+.style-accordion>.accordion-button:hover {
+  border-color: darkslategrey;
+  background-color: darkslategrey;
+}
+
+.style-accordion>.accordion-button:focus {
+  box-shadow: 0 0 0px 5px rgba(0, 139, 139, 0.25);
+}
+
+.style-accordion>.accordion-button::after {
+  background-image: none !important;
+  position: relative;
+  left: -5px !important;
+  top: -5px !important;
+  width: 13px;
+  height: 13px;
+  border: solid white;
+  border-width: 0 1px 1px 0;
+  -webkit-transform: rotate(45deg) !important;
+  -ms-transform: rotate(45deg) !important;
+  transform: rotate(45deg) !important;
+}
+
+.style-accordion>.accordion-button:not(.collapsed)::after {
+  left: -5px !important;
+  top: 3px !important;
+  border-width: 1px 0 0 1px;
+}
+
+
+.style-button {
+  border-color: darkcyan !important;
+  background-color: darkcyan !important;
+}
+
+.style-button:hover {
+  background-color: darkslategrey !important;
+  border-color: darkslategrey !important;
+}
+
+.style-button:active,
+.style-button.active {
+  background-color: darkcyan !important;
+}
+
+.style-button-outline {
+  border-color: darkcyan !important;
+  background-color: transparent !important;
+}
+
+.style-button-outline:hover {
+  background-color: darkcyan !important;
+}
+
+.style-button-outline:active,
+.style-button-outline.active {
+  background-color: darkcyan !important;
+}
+
+
+/* Customize the label (the container) */
+.style-checkmark-label {
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.style-default-checkmark {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.style-checkmark {
+  position: absolute;
+  top: 10%;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  border-radius: 25%;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.style-default-checkmark~.style-checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.style-default-checkmark:checked~.style-checkmark {
+  background-color: darkcyan;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.style-checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.style-default-checkmark:checked~.style-checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.style-checkmark:after {
+  left: 30%;
+  top: 10%;
+  width: 40%;
+  height: 65%;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.style-select-in-badge {
+  outline: 0;
+  background: transparent;
+  border: none; 
+  font-size: medium;
+}
+
+.style-select-in-badge-sm {
+  outline: 0;
+  background: transparent;
+  border: none; 
+  font-size: small;
+}
+
+.style-option-in-badge {
+  background-color:darkslategrey;
+}
+
+.style-vert-line {
+  border-left: 1px solid #ccc;
+  height: auto;
+  margin-left: 1ch;
+  margin-right: 1ch;
+}

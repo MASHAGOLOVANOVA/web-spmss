@@ -1,0 +1,2 @@
+ALTER TABLE project
+MODIFY COLUMN cloud_id INT;

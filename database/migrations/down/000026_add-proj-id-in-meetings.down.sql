@@ -1,0 +1,3 @@
+ALTER TABLE meeting 
+DROP FOREIGN KEY FK_meetPid,
+DROP COLUMN project_id;

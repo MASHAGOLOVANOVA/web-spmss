@@ -1,0 +1,2 @@
+ALTER TABLE user_account 
+MODIFY COLUMN hash VARCHAR(200) NOT NULL;

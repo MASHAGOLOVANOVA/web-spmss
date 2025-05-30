@@ -1,0 +1,2 @@
+ALTER TABLE professor_account
+MODIFY COLUMN hash BLOB NOT NULL;

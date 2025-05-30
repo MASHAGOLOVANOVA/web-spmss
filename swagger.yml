@@ -1,0 +1,423 @@
+openapi: 3.0.0
+info:
+  title: spams
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: projects
+  - name: auth
+  - name: account
+  - name: meetings
+  - name: students
+  - name: uni
+paths:
+  /projects/{project_id}:
+    get:
+      tags:
+        - projects
+      summary: get project 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: f23943db-25b9-42f0-98f1-8e44e590ccde/79824539397
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - projects
+      summary: update proj 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                theme: Просто  курсач
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: d14b0cf1-94a4-4869-9edc-65a8bcaaf31d/79641874888
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+            
+  /projects/{project_id}/statistics:
+    get:
+      tags:
+        - projects
+      summary: get project stats 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: 156e8a6a-a2a1-4e4a-9f65-89ab29ef7f68/79824539397
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+          
+  /projects:
+    get:
+      tags:
+        - projects
+      summary: show professor projects 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: f23943db-25b9-42f0-98f1-8e44e590ccde/79824539397
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+            
+            
+  /projects/{project_id}/commits:
+    get:
+      tags:
+        - projects
+      summary: show project commits 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+        - name: from
+          in: query
+          schema:
+            type: string
+          example: '2024-02-27T15:04:05.000Z'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+            
+  /projects/add:
+    post:
+      tags:
+        - projects
+      summary: add project 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                theme: >-
+                  Разработка информационной системы управления проектной
+                  деятельности студентов
+                student_id: 5
+                year: 2024
+                repository_owner_login: TypicalMedic
+                repository_name: Software-Architecture
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /projects/{project_id}/tasks/add:
+    post:
+      tags:
+        - projects
+      summary: add new task 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Написать введение
+                description: >-
+                  Требуется написать введение для курсовой работы.
+
+                  В введении обосновать актуальность темы, выделить цели и
+                  задачи проекта, описать объект и предмет исследования,
+                  значимость полученных результатов.
+                deadline: '2024-03-11T00:00:05.000Z'
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /projects/{project_id}/tasks:
+    get:
+      tags:
+        - projects
+      summary: get tasks 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /projects/{project_id}/grades:
+    put:
+      tags:
+        - projects
+      summary: update grades 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                defence_grade: 0
+                supervisor_review:
+                  id: 1
+                  criterias:
+                    - criteria: 123 test
+                      weight: 0.5
+                    - criteria: '12345'
+                      weight: 0.5
+                      grade: 10
+                  created: '2024-03-29T12:35:24Z'
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: 156e8a6a-a2a1-4e4a-9f65-89ab29ef7f68/79824539397
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/signin:
+    post:
+      tags:
+        - auth
+      summary: login 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                username: '79641874888'
+                password: qwerty
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      summary: register 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                username: '1'
+                password: '1'
+                name: '1'
+                surname: '1'
+                middlename: '1'
+                science_degree: '?'
+                university_id: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/integration/authlink/googledrive:
+    get:
+      tags:
+        - account
+      summary: get google drive auth link 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: f846c415-7473-4e1e-9790-43d659792e9c/79824539397
+        - name: redirect
+          in: query
+          schema:
+            type: integer
+          example: '124'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /account:
+    get:
+      tags:
+        - account
+      summary: get account info 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: e99c686d-516b-4aa5-a9c5-5ba919a9d9ef/user1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /account/integrations:
+    get:
+      tags:
+        - account
+      summary: get account integr 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /meetings:
+    get:
+      tags:
+        - meetings
+      summary: show professor schedule 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: 5c7be860-b271-4de8-8129-937519195bcc/79824539397
+        - name: from
+          in: query
+          schema:
+            type: string
+          example: '2024-01-20T15:04:05.000Z'
+        - name: to
+          in: query
+          schema:
+            type: string
+          example: '2024-05-20T15:04:05.000Z'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /meetings/add:
+    post:
+      tags:
+        - meetings
+      summary: add meeting 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: project proposal!
+                description: there are provided some details
+                meeting_time: '2024-03-31T14:35:24.000Z'
+                student_participant_id: 15
+                is_online: true
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: 5c7be860-b271-4de8-8129-937519195bcc/79824539397
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /students/add:
+    post:
+      tags:
+        - students
+      summary: add new student 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Иван
+                surname: Иванов
+                middlename: Иванович
+                cource: 4
+                education_programme_id: 1
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: string
+          example: 5c7be860-b271-4de8-8129-937519195bcc/79824539397
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /students:
+    get:
+      tags:
+        - students
+      summary: get all students 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /universities/{university_id}/edprogrammes:
+    get:
+      tags:
+        - uni
+      summary: get all progs 
+      parameters:
+        - name: Session-Id
+          in: header
+          schema:
+            type: integer
+          example: '1'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

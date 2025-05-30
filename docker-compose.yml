@@ -1,0 +1,55 @@
+version: '2.1'
+
+name: spams-container
+services:
+  web:
+    build:
+        context: .
+        dockerfile: build.Dockerfile
+    container_name: web-spams-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    build:
+        context: .
+        dockerfile: db.Dockerfile
+    image: mysql:latest
+    container_name: mysql-container
+    volumes:
+      - SPAMSDB:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: student_project_management
+      MYSQL_USER: owner
+      MYSQL_PASSWORD: root
+    ports: 
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  front:
+    build:
+        context: ./front
+        dockerfile: ../front.Dockerfile
+    container_name: front-spams-container
+    ports:
+      - "3000:3000"
+  bot:
+    env_file:
+      - ./spm-tg-bot/bot/.env
+    build:
+        context: ./spm-tg-bot
+        dockerfile: bot.Dockerfile
+    container_name: telegram-bot-container
+    restart: always
+    environment:
+      - HOST_URL=http://web:8080
+      - BOT_TOKEN=7772483926:AAFkT_nibrVHwZmlJajxbXRU4Wxe_b7t_RI
+volumes:
+  SPAMSDB:
+  SPAMSDB_TEST:

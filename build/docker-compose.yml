@@ -1,0 +1,28 @@
+version: '2.1'
+
+name: spams-container
+services:
+  web:
+    build:
+        context: .
+        dockerfile: build.Dockerfile
+    container_name: web-spams-container
+    ports:
+      - "80:80" # Измените на нужный порт вашего приложения
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    volumes:
+      - SPAMSDB:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: student_project_management
+      MYSQL_USER: owner
+      MYSQL_PASSWORD: klotorol159.M
+    ports: 
+      - 3306:3306
+volumes:
+  SPAMSDB:    
+    external: true

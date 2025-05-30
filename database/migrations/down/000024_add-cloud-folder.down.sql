@@ -1,0 +1,4 @@
+ALTER TABLE project 
+DROP FOREIGN KEY FK_PrClf;
+
+DROP TABLE cloud_folder;
