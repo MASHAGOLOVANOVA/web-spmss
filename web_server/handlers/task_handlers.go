@@ -206,8 +206,20 @@ func (h *TaskHandler) GetTaskStatusList(w http.ResponseWriter, r *http.Request) 
 				Value: int(domainaggregate.InProgress),
 			},
 			{
-				Name:  domainaggregate.Finished.String(),
-				Value: int(domainaggregate.Finished),
+				Name:  domainaggregate.FinishedOnTime.String(),
+				Value: int(domainaggregate.FinishedOnTime),
+			},
+			{
+				Name:  domainaggregate.FinishedLate.String(),
+				Value: int(domainaggregate.FinishedLate),
+			},
+			{
+				Name:  domainaggregate.Missed.String(),
+				Value: int(domainaggregate.Missed),
+			},
+			{
+				Name:  domainaggregate.Cancelled.String(),
+				Value: int(domainaggregate.Cancelled),
 			},
 		},
 	}

@@ -1,0 +1,21 @@
+stages:
+  - lint
+
+lint_python_3_8:
+  image: python:3.8
+  stage: lint
+  script:
+    - pip install --upgrade pip
+    - pip install pylint
+    - pip install -r requirements.txt || true
+    - pylint -v $(git ls-files '*.py')
+
+lint_python_3_9:
+  image: python:3.9
+  stage: lint
+  script:
+    - pip install --upgrade pip
+    - pip install pylint
+    - pip install -r requirements.txt || true
+    - pylint -v $(git ls-files '*.py')
+

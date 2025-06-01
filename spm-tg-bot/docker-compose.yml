@@ -1,0 +1,14 @@
+version: '1.0'
+
+name: spams-container
+services:
+  bot:
+    env_file:
+      - ./bot/.env
+    build:
+      dockerfile: Dockerfile
+    container_name: telegram-bot-container
+    restart: always
+    environment:
+      - HOST_URL=https://fmn1es-193-105-131-7.ru.tuna.am
+      - BOT_TOKEN=7772483926:AAFkT_nibrVHwZmlJajxbXRU4Wxe_b7t_RI

@@ -258,7 +258,7 @@ func (d *YandexDisk) AddProfessorBaseFolder() (models.DriveData, error) {
 	baseName := "Student Project Management System"
 	folderName := baseName
 
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= 1000; i++ {
 		_, err := d.GetFolderInfo(folderName)
 		if err != nil {
 			// Папка не существует, создаем

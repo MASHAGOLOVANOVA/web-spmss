@@ -112,9 +112,15 @@ func (r *MeetingRepository) ChooseSlot(slotId int, studId int) error {
 }
 
 func (r *MeetingRepository) BindSlotToProject(slotId int, projectId int) error {
+	dbStudMeeting := models.StudMeeting{}
+	result := r.dbContext.DB.Select("*").Where("slot_id = ?", slotId).Find(&dbStudMeeting)
+	if result.Error != nil {
+		return result.Error
+	}
+
 	dbProjectMeeting := models.ProjectMeeting{}
-	dbProjectMeeting.MapToThis(slotId, projectId)
-	result := r.dbContext.DB.Create(&dbProjectMeeting)
+	dbProjectMeeting.MapToThis(int(dbStudMeeting.Id), projectId)
+	result = r.dbContext.DB.Create(&dbProjectMeeting)
 
 	if result.Error != nil {
 		return result.Error
@@ -132,12 +138,16 @@ func (r *MeetingRepository) AddSlot(meeting entities.Slot, planerId string) (ent
 	return dbmeeting.MapToEntity(), nil
 }
 
+var (
+	ErrSlotNotFound = errors.New("slot not found")
+)
+
 func (r *MeetingRepository) GetSlotById(slotId int) (entities.Slot, error) {
 	meetingsDb := models.Slot{}
 
-	result := r.dbContext.DB.Select("*").Where("id = ?", slotId).Find(&meetingsDb)
-	if result.Error != nil {
-		return entities.Slot{}, result.Error
+	r.dbContext.DB.Select("*").Where("id = ?", slotId).Find(&meetingsDb)
+	if meetingsDb.Id == 0 {
+		return entities.Slot{}, ErrSlotNotFound
 	}
 
 	return meetingsDb.MapToEntity(), nil

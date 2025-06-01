@@ -275,8 +275,6 @@ function ProjectStats() {
                         <div>
                             <Row className='mb-3' xs={1} md={2} lg={2}>
                                 <Col className='mb-3'>
-                                    <div className='fs-3 mb-2 fw-medium'>Встречи</div>
-                                    <div className='fs-5 mb-2'>Проведенные встречи: {stats.total_meetings}</div>
                                     <div className='fs-3 mb-2 fw-medium'>Задания</div>
                                     {stats.total_tasks == 0 ?
                                         <div className='fs-5 mb-2'>Заданий нет!</div> :

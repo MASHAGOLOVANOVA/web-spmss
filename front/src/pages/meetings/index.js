@@ -24,6 +24,8 @@ const MeetingCard = ({ meeting, onReschedule, onCancel, onAddProject }) => {
     });
   };
 
+  const isPastMeeting = new Date(meeting.start_time) < new Date();
+
   return (
     <Row as="li" className="d-flex justify-content-between align-items-start mb-3 p-3 bg-dark rounded">
       <Col xs={12} sm={12} md={3} lg={2} className="pe-4">
@@ -53,20 +55,22 @@ const MeetingCard = ({ meeting, onReschedule, onCancel, onAddProject }) => {
         </div>
         
         <div className="d-flex gap-2 mt-2">
-          <Button 
-            variant="outline-primary" 
-            size="sm"
-            onClick={() => onReschedule(meeting)}
-          >
-            Перенести
-          </Button>
-          <Button 
-            variant="outline-danger" 
-            size="sm"
-            onClick={() => onCancel(meeting)}
-          >
-            Отменить
-          </Button>
+        <Button 
+          variant="outline-primary" 
+          size="sm"
+          onClick={() => onReschedule(meeting)}
+          disabled={isPastMeeting}
+        >
+          Перенести
+        </Button>
+        <Button 
+          variant="outline-danger" 
+          size="sm"
+          onClick={() => onCancel(meeting)}
+          disabled={isPastMeeting}
+        >
+          Отменить
+        </Button>
           {!meeting.project_id && (
             <Button 
               variant="outline-success" 
@@ -275,7 +279,11 @@ const MeetingsList = () => {
           );
           
           const meetingsData = await meetingsResponse.json();
-          setMeetings(meetingsData.slots || []);
+
+          const sortedMeetings = (meetingsData.slots || []).sort((a, b) => {
+          return new Date(b.start_time) - new Date(a.start_time);
+        });
+          setMeetings(sortedMeetings || []);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -406,6 +414,35 @@ const MeetingsList = () => {
         setShowAlert(true);
         return;
       }
+
+      // Преобразуем новое время в Date объект
+      const newTime = new Date(newMeetingTime);
+      const oldTime = new Date(selectedMeeting.start_time);
+      
+      // Проверяем, что новое время отличается от старого
+      if (newTime.getTime() === oldTime.getTime() && newDuration === Math.round((new Date(selectedMeeting.end_time) - oldTime) / 60000)) {
+        setAlertMessage('Новое время совпадает с текущим. Пожалуйста, укажите другое время.');
+        setAlertVariant('warning');
+        setShowAlert(true);
+        return;
+      }
+
+      // Проверяем, что новое время не раньше текущего момента
+      if (newTime < new Date()) {
+        setAlertMessage('Невозможно перенести встречу на прошедшее время');
+        setAlertVariant('danger');
+        setShowAlert(true);
+        return;
+      }
+
+    // Добавляем проверку длительности
+      if (newDuration < 15 || newDuration > 180) {
+        setAlertMessage('Длительность встречи должна быть от 15 до 180 минут');
+        setAlertVariant('danger');
+        setShowAlert(true);
+        return;
+      }
+
       // Получаем локальную дату и время без преобразования в UTC
     const localDateTime = new Date(newMeetingTime);
     // Создаем строку в формате ISO без учета часового пояса
@@ -461,6 +498,27 @@ const MeetingsList = () => {
       setAlertVariant('success');
       setShowAlert(true);
       
+// Полностью перезагружаем данные встреч
+      setLoading(true);
+      const meetingsResponse = await fetch(
+        `${process.env.REACT_APP_SERVER_ADDR}/api/v1/slots/professor/student`,
+        {
+          method: "GET",
+          headers: {
+            "Session-Id": cookies.get('session_token'),
+            "Content-Type": "application/json"
+          },
+          credentials: 'include'
+        }
+      );
+      
+      const meeting1sData = await meetingsResponse.json();
+      const sortedMeetings = (meeting1sData.slots || []).sort((a, b) => {
+        return new Date(b.start_time) - new Date(a.start_time);
+      });
+      setMeetings(sortedMeetings);
+      setLoading(false);
+
     } catch (error) {
       console.error('Ошибка при переносе встречи:', error);
       setAlertMessage('Не удалось перенести встречу');

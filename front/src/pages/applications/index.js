@@ -101,8 +101,21 @@ return (
                         <>
                             <div className='mb-2'>Найдено результатов: {pendingApplications.length}</div>
                             {pendingApplications.map((appl) => (
-                                <Card key={appl.id} className="mb-4 style-outline">
-                                    <Card.Header>{appl.student_name}</Card.Header>
+                                <Card key={appl.id} className="mb-4 shadow-sm" style={{ borderLeft: '4px solid #6c757d' }}>
+  <Card.Header>
+    <div className="d-flex flex-column">
+      <h5 className="mb-1 fw-bold">{appl.student_name}</h5>
+      <div className="d-flex flex-wrap gap-2">
+        <span className="badge bg-secondary">
+          {appl.student_uni}
+        </span>
+        <span className="badge bg-info text-dark">
+          {appl.student_ed_prog}
+        </span>
+      </div>
+    </div>
+  </Card.Header>
+  
                                     <Card.Body>
                                         <Card.Subtitle className="mb-2 text-muted">
                                             На рассмотрении

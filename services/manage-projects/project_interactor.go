@@ -372,7 +372,7 @@ func (p *ProjectInteractor) DeleteProject(profId uint, projectId uint64, cloudDr
 		found = false
 	}
 
-	cloudLink, err := p.projectRepo.GetProjectFolderLink(fmt.Sprint(projectId))
+	_, err := p.projectRepo.GetProjectFolderLink(fmt.Sprint(projectId))
 	if err != nil {
 		if !errors.Is(err, models.ErrProjectCloudFolderNotFound) {
 			return err
@@ -385,12 +385,6 @@ func (p *ProjectInteractor) DeleteProject(profId uint, projectId uint64, cloudDr
 			RefreshToken: resDrive.CloudDriveIntegration.ApiKey,
 		}
 		err = cloudDrive.Authentificate(token)
-		if err != nil {
-			return err
-		}
-
-		// add folder to cloud
-		err = cloudDrive.DeleteFolder(cloudLink, resDrive.CloudDriveIntegration)
 		if err != nil {
 			return err
 		}

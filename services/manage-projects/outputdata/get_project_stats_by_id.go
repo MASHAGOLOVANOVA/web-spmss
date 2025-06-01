@@ -42,7 +42,7 @@ func MapToGetProjectStatsById(stats models.ProjectStats) GetProjectStatsById {
 			FinalGrade:       stats.CalculateGrade(),
 			SupervisorReview: supr,
 		},
-		TasksDone:     stats.FinishedCount,
+		TasksDone:     stats.FinishedOnTimeCount + stats.FinishedLateCount,
 		TotalTasks:    stats.GetTotal(),
 		TasksDonePerc: stats.GetCompletionPercentage(),
 	}

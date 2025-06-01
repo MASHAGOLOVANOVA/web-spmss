@@ -1,6 +1,8 @@
 package googlecalendar
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	googleapi "mvp-2-spms/integrations/google-api"
 	"strings"
@@ -53,7 +55,6 @@ func (c *googleCalendarApi) AddEvent(startTime time.Time, summary string, desc s
 			TimeZone: "Etc/GMT-5", //////////////////////////////////////?????????????????????????????????????
 			DateTime: endTime,
 		},
-		Recurrence: []string{"RRULE:FREQ=DAILY;COUNT=1"},
 	}
 	result, err := c.api.Events.Insert(calendarId, event).Do()
 	if err == nil {
@@ -67,8 +68,26 @@ func (c *googleCalendarApi) DeleteSlot(eventId string, calendarId string) (*cale
 	return nil, err
 }
 
+var (
+	ErrSlotConflict = errors.New("slot conflict")
+)
+
 func (c *googleCalendarApi) AddSlot(startTime time.Time, duration int, desc string, calendarId string) (*calendar.Event, error) {
+	// Проверка на пересечение с существующими событиями
+	existingEvents, err := c.api.Events.List(calendarId).
+		TimeMin(startTime.Format(time.RFC3339)).
+		TimeMax(startTime.Add(time.Duration(duration) * time.Minute).Format(time.RFC3339)).
+		SingleEvents(true).
+		Do()
+	if err != nil {
+		return nil, fmt.Errorf("failed to check existing events: %v", err)
+	}
+
+	if len(existingEvents.Items) > 0 {
+		return nil, ErrSlotConflict
+	}
 	endTime := strings.Split(startTime.Add(time.Duration(duration)*time.Minute).Format(time.RFC3339), "Z")[0]
+
 	event := &calendar.Event{
 		Summary:     "SPAMS Slot",
 		Description: desc,
@@ -80,7 +99,6 @@ func (c *googleCalendarApi) AddSlot(startTime time.Time, duration int, desc stri
 			TimeZone: "Etc/GMT-5",
 			DateTime: endTime,
 		},
-		Recurrence: []string{"RRULE:FREQ=DAILY;COUNT=1"},
 	}
 	result, err := c.api.Events.Insert(calendarId, event).Do()
 	if err == nil {
@@ -90,7 +108,28 @@ func (c *googleCalendarApi) AddSlot(startTime time.Time, duration int, desc stri
 }
 
 func (c *googleCalendarApi) UpdateEvent(startTime time.Time, duration int, calendarId string, eventId string) (*calendar.Event, error) {
+	// Проверка на пересечение с существующими событиями
 	endTime := strings.Split(startTime.Add(time.Duration(duration)*time.Minute).Format(time.RFC3339), "Z")[0]
+	existingEvents, err := c.api.Events.List(calendarId).
+		TimeMin(startTime.Format(time.RFC3339)).
+		TimeMax(endTime).
+		SingleEvents(true).
+		Do()
+	if err != nil {
+		return nil, fmt.Errorf("failed to check existing events: %v", err)
+	}
+
+	var conflictingEvents []*calendar.Event
+	for _, item := range existingEvents.Items {
+		if item.Id != eventId { // Исключаем текущее событие из проверки
+			conflictingEvents = append(conflictingEvents, item)
+		}
+	}
+
+	if len(conflictingEvents) > 0 {
+		return nil, ErrSlotConflict
+	}
+
 	event, err := c.GetEventById(eventId, calendarId)
 	if err != nil {
 		log.Printf("event not found")

@@ -10,17 +10,26 @@ type TaskStatus int
 const (
 	NotStarted TaskStatus = iota
 	InProgress
-	Finished
+	FinishedOnTime
+	FinishedLate
+	Cancelled
+	Missed
 )
 
 func (s TaskStatus) String() string {
 	switch s {
-	case TaskStatus(NotStarted):
-		return "Not Started"
-	case TaskStatus(InProgress):
-		return "In Progress"
-	case TaskStatus(Finished):
-		return "Finished"
+	case NotStarted:
+		return "Не начато"
+	case InProgress:
+		return "В процессе"
+	case FinishedOnTime:
+		return "Завершено (вовремя)"
+	case FinishedLate:
+		return "Завершено (с опозданием)"
+	case Cancelled:
+		return "Отменено"
+	case Missed:
+		return "Просрочено"
 	default:
 		return fmt.Sprintf("%d", int(s))
 	}

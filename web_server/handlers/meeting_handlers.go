@@ -5,14 +5,15 @@ import (
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"log"
+	meetingrepository "mvp-2-spms/database/meeting-repository"
 	domainaggregate "mvp-2-spms/domain-aggregate"
+	googlecalendar "mvp-2-spms/integrations/planner-service/google-calendar"
 	"mvp-2-spms/internal"
 	mngInterfaces "mvp-2-spms/services/interfaces"
 	ainputdata "mvp-2-spms/services/manage-accounts/inputdata"
 	minputdata "mvp-2-spms/services/manage-meetings/inputdata"
 	"mvp-2-spms/services/models"
 	"mvp-2-spms/web_server/handlers/interfaces"
-	requestbodies "mvp-2-spms/web_server/handlers/request-bodies"
 	responsebodies "mvp-2-spms/web_server/handlers/response-bodies"
 	"net/http"
 	"strconv"
@@ -323,7 +324,14 @@ func (h *MeetingHandler) ChooseSlot(w http.ResponseWriter, r *http.Request) {
 
 	err = h.meetingInteractor.ChooseSlot(id, slotId)
 	if err != nil {
-		return
+		if errors.Is(err, meetingrepository.ErrSlotNotFound) {
+			w.WriteHeader(http.StatusBadRequest)
+			if err := json.NewEncoder(w).Encode(err.Error()); err != nil {
+				log.Printf("Ошибка при кодировании ответа: %v", err)
+			}
+			return
+		}
+
 	}
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -513,8 +521,6 @@ func (h *MeetingHandler) AddSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	print("foundUser")
-
 	id, err := strconv.Atoi(user.GetAccId())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -524,8 +530,6 @@ func (h *MeetingHandler) AddSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	print("foundProf")
-
 	headerContentTtype := r.Header.Get("Content-Type")
 	// проверяем соответсвтвие типа содержимого запроса
 	if headerContentTtype != "application/json" {
@@ -534,15 +538,16 @@ func (h *MeetingHandler) AddSlot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// декодируем тело запроса
-	var reqB requestbodies.AddSlot
+	var reqB struct {
+		Description string `json:"description"`
+		MeetingTime string `json:"meeting_time"` // Получаем как строку
+		Duration    int    `json:"duration"`
+		IsOnline    bool   `json:"is_online"`
+	}
+
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
-
 	err = decoder.Decode(&reqB)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		if err := json.NewEncoder(w).Encode(err.Error()); err != nil {
@@ -550,6 +555,22 @@ func (h *MeetingHandler) AddSlot(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	// Парсим время вручную с учетом локали
+	meetingTime, err := time.Parse(time.RFC3339, reqB.MeetingTime)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Invalid time format")
+		return
+	}
+
+	// Преобразуем в нужный часовой пояс (например, Europe/Moscow)
+	loc, err := time.LoadLocation("Asia/Yekaterinburg")
+	if err != nil {
+		loc = time.UTC // Fallback
+	}
+
+	localTime := meetingTime.In(loc)
 
 	integInput := ainputdata.GetPlannerIntegration{
 		AccountId: uint(id),
@@ -577,7 +598,7 @@ func (h *MeetingHandler) AddSlot(w http.ResponseWriter, r *http.Request) {
 		ProfessorId: uint(id),
 		Duration:    reqB.Duration,
 		Description: reqB.Description,
-		MeetingTime: reqB.MeetingTime,
+		MeetingTime: localTime, // Используем UTC время
 		IsOnline:    reqB.IsOnline,
 	}
 
@@ -585,6 +606,13 @@ func (h *MeetingHandler) AddSlot(w http.ResponseWriter, r *http.Request) {
 	// TODO: pass api key/clone with new key///////////////////////////////////////////////////////////////////////////////
 	slot_id, err := h.meetingInteractor.AddSlot(meetingInput, planner)
 	if err != nil {
+		if errors.Is(err, googlecalendar.ErrSlotConflict) {
+			w.WriteHeader(http.StatusBadRequest)
+			if err := json.NewEncoder(w).Encode(err.Error()); err != nil {
+				log.Printf("Ошибка при кодировании ответа: %v", err)
+			}
+			return
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		if err := json.NewEncoder(w).Encode(err.Error()); err != nil {
 			log.Printf("Ошибка при кодировании ответа: %v", err)

@@ -52,4 +52,3 @@ services:
       - BOT_TOKEN=7772483926:AAFkT_nibrVHwZmlJajxbXRU4Wxe_b7t_RI
 volumes:
   SPAMSDB:
-  SPAMSDB_TEST:

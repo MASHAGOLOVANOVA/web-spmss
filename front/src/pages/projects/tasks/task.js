@@ -54,7 +54,6 @@ function Task() {
                                 </Col>
                                 <Col>
                                     <div>Открыть папку проекта</div>
-                                    <div>чипи чипи чапа чапа</div>
                                 </Col>
                             </Row>
                         </div>
